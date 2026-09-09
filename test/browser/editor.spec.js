@@ -5,6 +5,21 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
+test("search metadata identifies the canonical public site", async ({ page }) => {
+  await expect(page).toHaveTitle("Twedit — Twitter / X Thread Editor");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Write and preview Twitter / X threads with accurate character counts. Free, no login, local autosave, and JSON import/export.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://twedit.net/",
+  );
+  await expect(
+    page.getByText(/Write and preview Twitter \/ X threads/),
+  ).toBeVisible();
+});
+
 test("minimal two-column layout uses Flowbite styling", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Input", exact: true }),
