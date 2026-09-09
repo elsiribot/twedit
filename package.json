@@ -1,0 +1,24 @@
+{
+  "name": "twedit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:js && npm run build:css",
+    "start": "python3 -m http.server 3000",
+    "test": "node --test test/*.test.js",
+    "test:e2e": "playwright test",
+    "build:js": "esbuild src/app.js --bundle --minify --outfile=app.js --legal-comments=linked",
+    "build:css": "tailwindcss -i src/style.css -o style.css --minify"
+  },
+  "dependencies": {
+    "flowbite": "^4.0.1",
+    "twitter-text": "3.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/cli": "^4.3.3",
+    "esbuild": "0.25.9",
+    "tailwindcss": "^4.3.3"
+  }
+}
