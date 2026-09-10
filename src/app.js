@@ -180,6 +180,20 @@ $("tweet-editors").addEventListener("keydown", (event) => {
 });
 $("add-tweet").addEventListener("click", addTweet);
 
+$("clear-thread").addEventListener("click", () => {
+  if (
+    draft.tweets.some((text) => text.length > 0) &&
+    !window.confirm(
+      "Clear the entire thread? Export JSON first if you want to keep a copy.",
+    )
+  )
+    return;
+  draft = newDraft(draft.profile);
+  save();
+  notify("");
+  renderEditors(0);
+});
+
 $("export").addEventListener("click", () => {
   const url = URL.createObjectURL(
     new Blob([JSON.stringify(draft, null, 2) + "\n"], {

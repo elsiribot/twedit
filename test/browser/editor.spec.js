@@ -29,7 +29,7 @@ test("minimal two-column layout uses Flowbite styling", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Preview", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("button")).toHaveCount(3);
+  await expect(page.getByRole("button")).toHaveCount(4);
   const input = await page
     .locator('[aria-labelledby="input-heading"]')
     .boundingBox();
@@ -376,4 +376,65 @@ test("broken preview images leave a readable title and preserve the URL", async 
       .locator(".link-title")
       .evaluate((el) => getComputedStyle(el).position),
   ).toBe("static");
+});
+
+test("Clear resets the entire thread and persists the empty draft", async ({
+  page,
+}) => {
+  await page
+    .getByRole("textbox", { name: "Tweet 1", exact: true })
+    .fill("A thought https://twedit.net");
+  await page.getByRole("button", { name: "Add tweet" }).click();
+  await page
+    .getByRole("textbox", { name: "Tweet 2", exact: true })
+    .fill("Another thought");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Clear", exact: true }).click();
+  await expect(page.locator(".tweet-editor")).toHaveCount(1);
+  await expect(
+    page.getByRole("textbox", { name: "Tweet 1", exact: true }),
+  ).toHaveValue("");
+  await expect(
+    page.getByRole("textbox", { name: "Tweet 1", exact: true }),
+  ).toBeFocused();
+  await expect(page.locator("#count-0")).toHaveText("0 / 280");
+  await expect(page.locator(".link-preview")).toHaveCount(0);
+  await expect(page.locator(".preview-text")).toHaveText(
+    "Your tweet will appear here.",
+  );
+  await page.reload();
+  await expect(page.locator(".tweet-editor")).toHaveCount(1);
+  await expect(
+    page.getByRole("textbox", { name: "Tweet 1", exact: true }),
+  ).toHaveValue("");
+});
+
+test("cancelling Clear preserves the thread", async ({ page }) => {
+  await page
+    .getByRole("textbox", { name: "Tweet 1", exact: true })
+    .fill("Keep this thought");
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await page.getByRole("button", { name: "Clear", exact: true }).click();
+  await expect(
+    page.getByRole("textbox", { name: "Tweet 1", exact: true }),
+  ).toHaveValue("Keep this thought");
+  await expect(page.locator(".preview-text")).toHaveText("Keep this thought");
+  await page.reload();
+  await expect(
+    page.getByRole("textbox", { name: "Tweet 1", exact: true }),
+  ).toHaveValue("Keep this thought");
+});
+
+test("Clear removes extra empty tweets without confirmation", async ({
+  page,
+}) => {
+  let confirmations = 0;
+  page.on("dialog", (dialog) => {
+    confirmations++;
+    return dialog.dismiss();
+  });
+  await page.getByRole("button", { name: "Add tweet" }).click();
+  await page.getByRole("button", { name: "Clear", exact: true }).click();
+  await expect(page.locator(".tweet-editor")).toHaveCount(1);
+  expect(confirmations).toBe(0);
 });

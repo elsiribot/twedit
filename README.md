@@ -7,6 +7,7 @@ A minimal, static Twitter/X thread editor: input on the left, live preview on th
 Open `index.html` directly, or run `npm start` (Python 3 required) and visit http://localhost:3000. Built assets are included; installing dependencies is not necessary to use the page.
 
 - Add tweets with the button or Ctrl/Cmd + Enter. Remove links appear when there is more than one tweet.
+- **Clear** resets the thread to one empty tweet and updates the saved draft. It asks for confirmation before discarding text.
 - Character counts use the official `twitter-text` parser: standard 280 weighted characters, URLs counted as 23, and weighted emoji/CJK.
 - Over-limit or disallowed text is marked invalid with an inline error. Unfinished drafts remain editable and exportable; nothing is posted to X.
 - Import/export JSON using the links at the top. Imports validate the file before replacing work and ask before replacing a nonempty draft.
