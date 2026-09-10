@@ -9,7 +9,8 @@
     "test": "node --test test/*.test.js",
     "test:e2e": "playwright test",
     "build:js": "esbuild src/app.js --bundle --minify --outfile=app.js --legal-comments=linked",
-    "build:css": "tailwindcss -i src/style.css -o style.css --minify"
+    "build:css": "tailwindcss -i src/style.css -o style.css --minify",
+    "preview:render": "node scripts/render-social-preview.mjs"
   },
   "dependencies": {
     "flowbite": "^4.0.1",

@@ -1,4 +1,8 @@
 import {
+  createLinkPreview,
+  textWithoutTrailingCardLink,
+} from "./link-preview.js";
+import {
   newDraft,
   analyzeTweet,
   parseDraft,
@@ -106,6 +110,16 @@ function renderPreview(results) {
       text.classList.add("text-body");
       text.textContent = "Your tweet will appear here.";
     } else appendRichText(text, result.text);
+    const linkPreview = createLinkPreview(result.text, (hasImage) => {
+      if (!tweet.isConnected) return;
+      const displayText = hasImage
+        ? textWithoutTrailingCardLink(result.text)
+        : result.text;
+      text.replaceChildren();
+      text.hidden = !displayText;
+      appendRichText(text, displayText);
+    });
+    if (linkPreview) tweet.append(linkPreview);
     $("preview").append(tweet);
   });
 }
