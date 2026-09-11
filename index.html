@@ -47,7 +47,7 @@
     <main class="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
       <header class="mb-8 flex items-center justify-between gap-4">
         <h1 class="text-xl font-semibold">Twedit</h1>
-        <div class="flex gap-5 text-sm">
+        <div class="flex flex-wrap justify-end gap-x-5 gap-y-2 text-sm">
           <button
             id="import"
             class="font-medium text-body hover:text-heading hover:underline"
@@ -60,6 +60,25 @@
           >
             Export JSON
           </button>
+          <div class="deep-link-control">
+            <button
+              id="deep-link"
+              class="font-medium text-body hover:text-heading hover:underline"
+              aria-expanded="false"
+              aria-controls="deep-link-bubble"
+            >
+              Deep link
+            </button>
+            <div id="deep-link-bubble" class="deep-link-bubble" hidden>
+              <p id="deep-link-warning" role="alert" hidden></p>
+              <div id="deep-link-result" hidden>
+                <p id="deep-link-status" role="status"></p>
+                <input id="deep-link-url" aria-label="Deep link URL" type="text" readonly />
+                <p class="mt-2">Anyone with this link can read the thread. Gzip is not encryption.</p>
+              </div>
+              <button id="close-deep-link" class="mt-2 font-medium hover:underline">Dismiss</button>
+            </div>
+          </div>
           <input
             type="file"
             id="import-file"

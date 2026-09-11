@@ -25,6 +25,52 @@ textarea[aria-invalid="true"] {
   border-color: var(--color-fg-danger);
 }
 
+.deep-link-control {
+  position: relative;
+}
+
+.deep-link-bubble {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(320px, calc(100vw - 40px));
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  color: #334155;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
+  overflow-wrap: anywhere;
+}
+
+.deep-link-bubble::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 24px;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  border-top: inherit;
+  border-left: inherit;
+  transform: rotate(45deg);
+}
+
+.deep-link-bubble.is-warning {
+  border-color: #d97706;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+#deep-link-url {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+
 .link-card {
   position: relative;
   overflow: hidden;

@@ -11,6 +11,8 @@ Open `index.html` directly, or run `npm start` (Python 3 required) and visit htt
 - Character counts use the official `twitter-text` parser: standard 280 weighted characters, URLs counted as 23, and weighted emoji/CJK.
 - Over-limit or disallowed text is marked invalid with an inline error. Unfinished drafts remain editable and exportable; nothing is posted to X.
 - Import/export JSON using the links at the top. Imports validate the file before replacing work and ask before replacing a nonempty draft.
+- **Deep link** copies a snapshot of the JSON as gzip-compressed, base64url-encoded data in the URL fragment (`#draft=…`). Opening it restores the thread, asking before replacing a nonempty draft. After loading, the fragment is removed so reloading preserves later edits. No upload is needed, but anyone with the link can read the draft; compression is not encryption. Links made from local files only work where that file path exists.
+- Deep links have an application limit of 8,192 URL characters (including the page address), not a universal browser limit; other apps may impose smaller limits. Invalid or oversized links show a warning speech bubble; use JSON export for larger threads. Browsers without gzip stream support show a warning, and blocked clipboard access leaves a selectable link for manual copying.
 - Drafts autosave in local browser storage. Export backups: clearing browser data removes saved work, and private browsing/file URLs may restrict storage.
 
 The interface intentionally has no profile settings, numbering toggle, title editor, marketing panels, or simulated social actions. Existing files retain their profile, title, and numbering settings for compatibility.

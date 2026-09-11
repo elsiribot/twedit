@@ -1,4 +1,9 @@
 import {
+  createDeepLink,
+  readDeepLink,
+  DEEP_LINK_PREFIX,
+} from "./deep-link.js";
+import {
   createLinkPreview,
   textWithoutTrailingCardLink,
 } from "./link-preview.js";
@@ -237,4 +242,83 @@ $("import-file").addEventListener("change", async (event) => {
   }
 });
 
+function showDeepLinkBubble(message, warning = false) {
+  $("deep-link-bubble").hidden = false;
+  $("deep-link-bubble").classList.toggle("is-warning", warning);
+  $("deep-link").setAttribute("aria-expanded", "true");
+  $("deep-link-warning").hidden = !warning;
+  $("deep-link-warning").textContent = warning ? `⚠ ${message}` : "";
+  $("deep-link-result").hidden = warning;
+  $("deep-link-status").textContent = warning ? "" : message;
+}
+
+function closeDeepLinkBubble() {
+  $("deep-link-bubble").hidden = true;
+  $("deep-link").setAttribute("aria-expanded", "false");
+  $("deep-link").focus();
+}
+
+$("close-deep-link").addEventListener("click", closeDeepLinkBubble);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !$("deep-link-bubble").hidden)
+    closeDeepLinkBubble();
+});
+$("deep-link-url").addEventListener("click", (event) => event.target.select());
+$("deep-link").addEventListener("click", async () => {
+  $("deep-link").disabled = true;
+  $("deep-link-bubble").hidden = true;
+  $("deep-link").setAttribute("aria-expanded", "false");
+  $("deep-link-url").value = "";
+  try {
+    const url = await createDeepLink(draft, window.location.href);
+    $("deep-link-url").value = url;
+    let message = "Deep link copied to clipboard.";
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      message = "Copy this deep link (automatic clipboard access is unavailable).";
+    }
+    showDeepLinkBubble(message);
+    $("deep-link-url").focus();
+    $("deep-link-url").select();
+  } catch (error) {
+    showDeepLinkBubble(`Could not create a deep link: ${error.message}`, true);
+  } finally {
+    $("deep-link").disabled = false;
+  }
+});
+
+let deepLinkLoad = 0;
+async function loadDeepLink() {
+  const load = ++deepLinkLoad;
+  const url = window.location.href;
+  if (!window.location.hash.startsWith(DEEP_LINK_PREFIX)) return;
+  try {
+    const imported = await readDeepLink(url);
+    if (load !== deepLinkLoad || window.location.href !== url) return;
+    if (
+      JSON.stringify(imported) !== JSON.stringify(draft) &&
+      draft.tweets.some((text) => text.trim()) &&
+      !window.confirm(
+        "Replace the current thread with this deep link? Export JSON first if you want to keep a copy.",
+      )
+    )
+      return;
+    // Consume the fragment so a reload cannot restore the link over later edits.
+    const cleanUrl = new URL(url);
+    cleanUrl.hash = "";
+    window.history.replaceState(null, "", cleanUrl.href);
+    draft = imported;
+    save();
+    renderEditors();
+    $("deep-link-bubble").hidden = true;
+    $("deep-link").setAttribute("aria-expanded", "false");
+  } catch (error) {
+    if (load === deepLinkLoad && window.location.href === url)
+      showDeepLinkBubble(`Could not open the deep link: ${error.message}`, true);
+  }
+}
+
 renderEditors();
+window.addEventListener("hashchange", loadDeepLink);
+loadDeepLink();

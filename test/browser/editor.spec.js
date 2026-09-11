@@ -29,7 +29,7 @@ test("minimal two-column layout uses Flowbite styling", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Preview", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("button")).toHaveCount(4);
+  await expect(page.getByRole("button")).toHaveCount(5);
   const input = await page
     .locator('[aria-labelledby="input-heading"]')
     .boundingBox();
